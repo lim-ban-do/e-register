@@ -1,0 +1,135 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile with role-based access for Administrator or Teacher.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["ADMIN", "TEACHER"] },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "createdAt": { "type": "string" },
+        "lastLogin": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role", "status"]
+    },
+    "Teacher": {
+      "title": "Teacher",
+      "description": "Educator profile assigned to take daily registers and scan student gate passes.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "username": { "type": "string" },
+        "phone": { "type": "string" },
+        "subject": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "createdAt": { "type": "string" },
+        "scanCount": { "type": "number" }
+      },
+      "required": ["id", "name", "email", "status"]
+    },
+    "Pupil": {
+      "title": "Pupil",
+      "description": "Student enrolled in the school with credentials, class, grade, and photo.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "name": { "type": "string" },
+        "class": { "type": "string" },
+        "grade": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "INACTIVE"] },
+        "photo": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "name", "class", "grade", "status"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Daily attendance mark recorded via ID QR scan or facial recognition.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "studentId": { "type": "string" },
+        "pupilName": { "type": "string" },
+        "class": { "type": "string" },
+        "grade": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "status": { "type": "string", "enum": ["PRESENT", "ABSENT", "LATE"] },
+        "scanMethod": { "type": "string", "enum": ["QR_CODE", "FACE_RECOGNITION", "MANUAL"] },
+        "confidence": { "type": "number" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "studentId", "pupilName", "class", "grade", "date", "status"]
+    },
+    "ScanLog": {
+      "title": "ScanLog",
+      "description": "Real-time audit record of gate pass scan attempts.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "scanTime": { "type": "string" },
+        "rawPayload": { "type": "string" },
+        "studentId": { "type": "string" },
+        "pupilName": { "type": "string" },
+        "teacherId": { "type": "string" },
+        "teacherName": { "type": "string" },
+        "outcome": { "type": "string", "enum": ["SUCCESS", "DUPLICATE_PREVENTED", "INVALID_ID"] },
+        "message": { "type": "string" },
+        "scanMethod": { "type": "string", "enum": ["QR_CODE", "FACE_RECOGNITION", "MANUAL"] },
+        "confidence": { "type": "number" }
+      },
+      "required": ["id", "scanTime", "rawPayload", "outcome", "message"]
+    },
+    "SchoolSettings": {
+      "title": "SchoolSettings",
+      "description": "System-wide academic configuration and scanning rules.",
+      "type": "object",
+      "properties": {
+        "schoolName": { "type": "string" },
+        "schoolMotto": { "type": "string" },
+        "academicYear": { "type": "string" },
+        "duplicateScanCooldownSeconds": { "type": "number" },
+        "audioFeedbackEnabled": { "type": "boolean" },
+        "allowTeacherEditPupil": { "type": "boolean" }
+      },
+      "required": ["schoolName", "academicYear"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "User profiles and role credentials."
+    },
+    "/teachers/{teacherId}": {
+      "schema": { "$ref": "#/entities/Teacher" },
+      "description": "Teacher profiles and assigned educator info."
+    },
+    "/pupils/{pupilId}": {
+      "schema": { "$ref": "#/entities/Pupil" },
+      "description": "Enrolled student records, IDs, and credentials."
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/AttendanceRecord" },
+      "description": "Daily attendance marks and check-in logs."
+    },
+    "/scanLogs/{logId}": {
+      "schema": { "$ref": "#/entities/ScanLog" },
+      "description": "Audit trails of gate scanner activities."
+    },
+    "/settings/schoolConfig": {
+      "schema": { "$ref": "#/entities/SchoolSettings" },
+      "description": "Global school configuration document."
+    }
+  }
+}

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  limbando-school-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: limbando-school-attendance
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - JWT_SECRET=limbando_production_jwt_secret_key_change_me
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - DATABASE_URL=file:/app/data/school.db
+    volumes:
+      # Persistent volume for SQLite database storage
+      - school_db_data:/app/data
+
+volumes:
+  school_db_data:
+    driver: local

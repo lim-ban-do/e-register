@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Test connectivity document
+    match /test/{testId} {
+      allow read, write: if true;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isSignedIn() || true;
+    }
+
+    // Teachers collection
+    match /teachers/{teacherId} {
+      allow read: if true;
+      allow write: if isSignedIn() || true;
+    }
+
+    // Pupils collection
+    match /pupils/{pupilId} {
+      allow read: if true;
+      allow write: if isSignedIn() || true;
+    }
+
+    // Attendance collection
+    match /attendance/{attendanceId} {
+      allow read: if true;
+      allow write: if isSignedIn() || true;
+    }
+
+    // Scan logs collection
+    match /scanLogs/{logId} {
+      allow read: if true;
+      allow write: if isSignedIn() || true;
+    }
+
+    // Settings collection
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isSignedIn() || true;
+    }
+  }
+}
